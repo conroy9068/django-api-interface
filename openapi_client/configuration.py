@@ -413,6 +413,7 @@ conf = openapi_client.Configuration(
                 basic_auth=username + ':' + password
             ).get('authorization')
 
+
     def auth_settings(self):
         """Gets Auth Settings dict for api client.
 
@@ -435,6 +436,7 @@ conf = openapi_client.Configuration(
                     'apiKey',
                 ),
             }
+            print(auth['apiKey'])
         return auth
 
     def to_debug_report(self):

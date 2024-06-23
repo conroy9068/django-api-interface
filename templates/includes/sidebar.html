@@ -29,10 +29,23 @@
           <a href="{% url 'tables' %}" class="nav-link "><span class="pcoded-micon"><i
                 class="feather icon-server text-c-green"></i></span><span class="pcoded-mtext">Dynamic Tables</span></a>
         </li>
-        <li class="nav-item">
+        {% comment %} <li class="nav-item">
           <a target="_blank" href="/api/product/" class="nav-link "><span class="pcoded-micon"><i
                 class="feather icon-zap text-c-green"></i></span><span class="pcoded-mtext">Generated API</span></a>
+        </li> {% endcomment %}
+
+        {% if request.user.is_authenticated %}
+        <li
+          data-username="Shipments, Create Shipment, Track Shipment"
+          class="nav-item pcoded-hasmenu">
+          <a href="javascript:" class="nav-link "><span class="pcoded-micon"><i
+                class="bi bi-truck"></i></span><span class="pcoded-mtext">Shipments</span></a>
+          <ul class="pcoded-submenu">
+            <li class=""><a href="{% url 'create_shipment' %}" class="">Create Shipment</a></li>
+            <li class=""><a href="{% url 'track_shipment' %}" class="">Track Shipment</a></li>
+          </ul>
         </li>
+        {% endif %}
 
         {% if not request.user.is_authenticated %}
         <li
@@ -51,7 +64,7 @@
         {% if app_list %}
           {% for app in app_list %}
             {% if app.has_perms and not app.pinned %}
-              <li 
+              <li
                 data-username="basic components Button Alert Badges breadcrumb Paggination progress Tooltip popovers Carousel Cards Collapse Tabs pills Modal Grid System Typography Extra Shadows Embeds"
                 class="nav-item pcoded-hasmenu"
               >
