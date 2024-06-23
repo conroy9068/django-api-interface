@@ -1,41 +1,92 @@
-<!doctype html>
-<html lang="en">
-  <head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Address Validate Example</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
-    <style type="text/css">
-      .has-error input {
-        border-color: var(--bs-danger) !important;
-      }
+{% extends 'layouts/base.html' %} {% load static %} {% block content %}
 
-      .invalid-feedback {
-        display: block !important;
-      }
-    </style>
-  </head>
-  <body>
-    <div class="container my-5 py-5">
-      <h1 class="mb-3">Address Validate</h1>
-      {% if result %}
-        {{ result }}
-      {% else %}
-        <form method="post">
-          {% csrf_token %}
-          {% for field in form %}
-            <div class="{% if field.errors %}has-error{% else %}mb-3{% endif %}">
-              <label class="form-label" for="{{ field.id_for_label }}">{{ field.label }}</label>
-              {{ field }}
-            </div>
-            {% for error in field.errors %}
-              <div class="invalid-feedback {% if forloop.last %}mb-3{% else %}mb-1{% endif %}">{{ error }}</div>
-            {% endfor %}
-          {% endfor %}
-          <button class="btn btn-primary" type="submit">Submit</button>
-        </form>
-      {% endif %}
+<!-- [ Main Content ] start -->
+<div class="row">
+  <div class="col-sm-12">
+    <div class="card">
+      <div class="card-header">
+        <h5>Address Validation</h5>
+      </div>
+      <div class="card-block">
+        <div class="container my-5 py-5">
+          <div
+            id="form-container"
+            class="container my-5 py-5"
+            style="display: {% if result %}none{% else %}block{% endif %};"
+          >
+            <h1 class="mb-3">Address Validate</h1>
+            <form method="post" id="address-validate-form">
+              {% csrf_token %} {% for field in form %}
+              <div
+                class="{% if field.errors %}has-error{% else %}mb-3{% endif %}"
+              >
+                <label class="form-label" for="{{ field.id_for_label }}"
+                  >{{ field.label }}</label
+                >
+                {{ field }}
+              </div>
+              {% for error in field.errors %}
+              <div
+                class="invalid-feedback {% if forloop.last %}mb-3{% else %}mb-1{% endif %}"
+              >
+                {{ error }}
+              </div>
+              {% endfor %} {% endfor %}
+              <button class="btn btn-primary" type="submit">Submit</button>
+            </form>
+          </div>
+
+          <div
+            id="result-container"
+            class="container my-5 py-5"
+            style="display: {% if result %}block{% else %}none{% endif %};"
+          >
+            <h1 class="mb-3">Validation Result</h1>
+            {% if result %}
+            <div id="response-container" class="mb-3"></div>
+            <button class="btn btn-secondary" onclick="showForm()">
+              Back to Form
+            </button>
+            <script>
+              const response = {{ result|safe }};
+              const container = document.getElementById("response-container");
+
+              if (response.warnings) {
+                  const warnings = document.createElement("div");
+                  warnings.className = "alert alert-warning";
+                  warnings.textContent = response.warnings.join(", ");
+                  container.appendChild(warnings);
+              }
+
+              if (response.address) {
+                  response.address.forEach(addr => {
+                      const addressDiv = document.createElement("div");
+                      addressDiv.className = "alert alert-info";
+                      addressDiv.innerHTML = `
+                          <strong>Country Code:</strong> ${addr.countryCode}<br>
+                          <strong>Postal Code:</strong> ${addr.postalCode}<br>
+                          <strong>City Name:</strong> ${addr.cityName}<br>
+                          <strong>County Name:</strong> ${addr.countyName}<br>
+                          <strong>Service Area Code:</strong> ${addr.serviceArea.code}<br>
+                          <strong>Service Area Description:</strong> ${addr.serviceArea.description}<br>
+                          <strong>Service Area GMT Offset:</strong> ${addr.serviceArea.GMTOffset}
+                      `;
+                      container.appendChild(addressDiv);
+                  });
+              }
+
+              function showForm() {
+                  document.getElementById("form-container").style.display = "block";
+                  document.getElementById("result-container").style.display = "none";
+              }
+            </script>
+            {% endif %}
+          </div>
+        </div>
+      </div>
     </div>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
-  </body>
-</html>
+  </div>
+</div>
+<!-- [ Main Content ] end -->
+
+{% endblock content %}

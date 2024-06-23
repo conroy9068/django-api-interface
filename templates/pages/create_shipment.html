@@ -1,0 +1,43 @@
+{% extends 'layouts/base.html' %} {% load static %} {% block content %}
+
+<div class="row">
+  <div class="col-sm-12">
+    <div class="card">
+      <div class="card-header">
+        <h5>Create Shipment</h5>
+      </div>
+      <div class="card-block">
+        <div class="container my-5 py-5">
+          <h1 class="mb-3">Create Shipment</h1>
+          {% if result %}
+          <pre>{{ result }}</pre>
+          <button
+            class="btn btn-secondary"
+            onclick="window.location.href=window.location.href"
+          >
+            Back to Form
+          </button>
+          {% else %}
+          <form method="post">
+            {% csrf_token %} {% for field in form %}
+            <div
+              class="{% if field.errors %}has-error{% else %}mb-3{% endif %}"
+            >
+              <label class="form-label" for="{{ field.id_for_label }}"
+                >{{ field.label }}</label
+              >
+              {{ field }} {% for error in field.errors %}
+              <div class="invalid-feedback">{{ error }}</div>
+              {% endfor %}
+            </div>
+            {% endfor %}
+            <button class="btn btn-primary" type="submit">Submit</button>
+          </form>
+          {% endif %}
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+{% endblock content %}
