@@ -8,30 +8,59 @@
       </div>
       <div class="card-block">
         <div class="container my-5 py-5">
-          <h1 class="mb-3">Track Shipment</h1>
-          {% if result %}
-          <pre>{{ result|safe }}</pre>
-          <button
-            class="btn btn-secondary"
-            onclick="window.location.href=window.location.href"
+          <div
+            id="form-container"
+            class="container my-5 py-5"
+            style="display: {% if result %}none{% else %}block{% endif %};"
           >
-            Back to Form
-          </button>
-          {% else %}
-          <form method="post">
-            {% csrf_token %} {% for field in form %}
-            <div class="mb-3 {% if field.errors %}has-error{% endif %}">
-              <label class="form-label" for="{{ field.id_for_label }}"
-                >{{ field.label }}</label
+            <h1 class="mb-3">Track Shipment</h1>
+            <form method="post" id="track-shipment-form">
+              {% csrf_token %} {% for field in form %}
+              <div class="mb-3 {% if field.errors %}has-error{% endif %}">
+                <label class="form-label" for="{{ field.id_for_label }}"
+                  >{{ field.label }}</label
+                >
+                {{ field }}
+              </div>
+              {% for error in field.errors %}
+              <div
+                class="invalid-feedback {% if forloop.last %}mb-3{% else %}mb-1{% endif %}"
               >
-              {{ field }} {% for error in field.errors %}
-              <div class="invalid-feedback">{{ error }}</div>
-              {% endfor %}
-            </div>
-            {% endfor %}
-            <button class="btn btn-primary" type="submit">Submit</button>
-          </form>
-          {% endif %}
+                {{ error }}
+              </div>
+              {% endfor %} {% endfor %}
+              <button class="btn btn-primary" type="submit">Submit</button>
+            </form>
+          </div>
+
+          <div
+            id="result-container"
+            class="container my-5 py-5"
+            style="display: {% if result %}block{% else %}none{% endif %};"
+          >
+            <h1 class="mb-3">Tracking Result</h1>
+            {% if result %}
+            <div id="response-container" class="mb-3"></div>
+            <button class="btn btn-secondary" onclick="showForm()">
+              Back to Form
+            </button>
+            <script>
+              const response = {{ result|safe }};
+              const container = document.getElementById("response-container");
+
+              function formatResponse(data) {
+                return JSON.stringify(data, null, 2);
+              }
+
+              container.textContent = formatResponse(response);
+
+              function showForm() {
+                document.getElementById("form-container").style.display = "block";
+                document.getElementById("result-container").style.display = "none";
+              }
+            </script>
+            {% endif %}
+          </div>
         </div>
       </div>
     </div>
